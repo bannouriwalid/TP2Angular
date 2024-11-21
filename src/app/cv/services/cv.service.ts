@@ -42,8 +42,14 @@ export class CvService {
    * @returns CV[]
    *
    */
-  getCvs(): Observable<Cv[]> {
-    return this.http.get<Cv[]>(API.cv);
+  getCvs(filter?: string): Observable<Cv[]> {
+    let params = new HttpParams();
+
+    if (filter) {
+      params = params.set('filter', filter);
+    }
+
+    return this.http.get<Cv[]>(API.cv, { params });
   }
 
   /**
