@@ -1,18 +1,85 @@
-<div class="row">
-  <div class="col">
-    <ol class="list-group">
-      @for (todo of todos; track todo) {
-        <li class="list-group-item">
-          {{todo.name}} : {{todo.content}}
-          <i (click)="deleteTodo(todo)" class="fa fa-trash" aria-hidden="true"></i>
-        </li>
-      }
-    </ol>
+<div class="container mt-4 to-body-color">
+  <div class="input-section">
+    <input type="text" class="form-control" placeholder="name" [(ngModel)]="name">
+    <input type="text" class="form-control mt-2" placeholder="content" [(ngModel)]="content">
+    <button class="btn btn-danger mt-2" (click)="addTodo()">add</button>
   </div>
-  <div class="col">
-    name: <input [(ngModel)]="todo.name" type="text" class="form-control">
-    content: <input [(ngModel)]="todo.content" type="text" class="form-control">
-    <button (click)="addTodo()" [disabled]="!todo.name.trim() || !todo.content.trim()"
-    class="btn btn-primary m-2">add</button>
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <h5 class="status-heading waiting">Waiting</h5>
+      <div class="status-section">
+        <div *ngFor="let todo of waitingTodos" class="todo-card mb-3">
+          <div class="card-body d-flex align-items-center">
+            <div class="me-3">
+              <h5 class="card-title mb-0">{{ todo.name }}</h5>
+              <p class="card-text text-muted">{{ todo.content }}</p>
+            </div>
+            <div class="ms-auto">
+              <select [(ngModel)]="todo.status" (change)="changeStatus(todo, todo.status)"
+                      class="form-select d-inline w-auto">
+                <option [ngValue]="'waiting'">Waiting</option>
+                <option [ngValue]="'in progress'">In Progress</option>
+                <option [ngValue]="'done'">Done</option>
+              </select>
+            </div>
+            <div>
+              <i (click)="removeTodo(todo)" class="fa fa-trash fa-2x text-danger p-2 cursor-pointer"
+                 aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <h5 class="status-heading in-progress">In Progress Todos</h5>
+      <div class="status-section">
+        <div *ngFor="let todo of inProgressTodos" class="todo-card">
+          <div class="card-body d-flex align-items-center">
+            <div class="me-3">
+              <h5 class="card-title mb-0">{{ todo.name }}</h5>
+              <p class="card-text text-muted">{{ todo.content }}</p>
+            </div>
+            <div class="ms-auto">
+              <select [(ngModel)]="todo.status" (change)="changeStatus(todo, todo.status)"
+                      class="form-select d-inline w-auto">
+                <option [ngValue]="'waiting'">Waiting</option>
+                <option [ngValue]="'in progress'">In Progress</option>
+                <option [ngValue]="'done'">Done</option>
+              </select>
+            </div>
+            <div>
+              <i (click)="removeTodo(todo)" class="fa fa-trash fa-2x text-danger p-2 cursor-pointer"
+                 aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <h5 class="status-heading done">Done Todos</h5>
+      <div class="status-section">
+        <div *ngFor="let todo of doneTodos" class="todo-card">
+          <div class="card-body d-flex align-items-center">
+            <div class="me-3">
+              <h5 class="card-title mb-0">{{ todo.name }}</h5>
+              <p class="card-text text-muted">{{ todo.content }}</p>
+            </div>
+            <div class="ms-auto">
+              <select [(ngModel)]="todo.status" (change)="changeStatus(todo, todo.status)"
+                      class="form-select d-inline w-auto">
+                <option [ngValue]="'waiting'">Waiting</option>
+                <option [ngValue]="'in progress'">In Progress</option>
+                <option [ngValue]="'done'">Done</option>
+              </select>
+            </div>
+            <div>
+              <i (click)="removeTodo(todo)" class="fa fa-trash fa-2x text-danger p-2 cursor-pointer"
+                 aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+

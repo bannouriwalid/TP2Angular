@@ -1,0 +1,15 @@
+.output-box {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
+}
+.price-box {
+  background-color: #b5e7f0;
+}
+.total-box {
+  background-color: #c7eac3;
+}
+.discount-box {
+  background-color: #f7d7d9;
+}

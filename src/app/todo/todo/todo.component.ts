@@ -1,34 +1,51 @@
-import { Component, inject } from '@angular/core';
-import { Todo } from '../model/todo';
+import { Component, signal } from '@angular/core';
+import { Todo, TodoStatus } from '../model/todo';
 import { TodoService } from '../service/todo.service';
-
-import { FormsModule } from '@angular/forms';
+import {FormsModule} from "@angular/forms";
+import {CommonModule} from "@angular/common";
 
 @Component({
-    selector: 'app-todo',
-    templateUrl: './todo.component.html',
-    styleUrls: ['./todo.component.css'],
-    providers: [TodoService],
-    standalone: true,
-    imports: [FormsModule],
+  selector: 'app-todo',
+  templateUrl: './todo.component.html',
+  styleUrls: ['./todo.component.css'],
+  providers: [TodoService],
+  standalone: true,
+  imports: [FormsModule, CommonModule],
 })
 export class TodoComponent {
-  private todoService = inject(TodoService);
+  name = signal<string>('');
+  content = signal<string>('');
+  newTodoId = 1;
 
-  todos: Todo[] = [];
-  todo = new Todo();
+  constructor(public todoService: TodoService) {}
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-  constructor() {
-    this.todos = this.todoService.getTodos();
+  addTodo(): void {
+    if (this.name() && this.content()) {
+      const newTodo = new Todo(this.newTodoId++, this.name(), this.content(), 'waiting');
+      this.todoService.addTodo(newTodo);
+      this.name.set('');
+      this.content.set('');
+    }
   }
-  addTodo() {
-    this.todoService.addTodo(this.todo);
-    this.todo = new Todo();
+
+  changeStatus(todo: Todo, status: TodoStatus): void {
+    todo.status = status;
+    this.todoService.updateTodoStatus(todo);
   }
 
-  deleteTodo(todo: Todo) {
-    this.todoService.deleteTodo(todo);
+  get waitingTodos(): Todo[] {
+    return this.todoService.getTodos().filter(todo => todo.status === 'waiting');
+  }
+
+  get inProgressTodos(): Todo[] {
+    return this.todoService.getTodos().filter(todo => todo.status === 'in progress');
+  }
+
+  get doneTodos(): Todo[] {
+    return this.todoService.getTodos().filter(todo => todo.status === 'done');
+  }
+
+  removeTodo(todo: Todo) {
+    this.todoService.deleteTodo(todo)
   }
 }

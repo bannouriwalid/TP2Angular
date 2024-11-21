@@ -1,9 +1,11 @@
-<div [style.backgroundColor]="divColor">
+<div [style.background-color]="divColor">
   Color
 </div>
-
-<input #inputColor (change)="changeColor(inputColor.value)" type="text" class="form-control">
-
-<button (click)="changeColor(defaultColor)" class="btn btn-warning">
+<br>
+<input id="rainbow-input"  #inputColor
+       (change)="changeColor(inputColor.value)"
+       type="text" class="form-control" app-rainbow>
+<br>
+<button (click)="changeColor(defaultColor)" class="btn btn-warning" >
   reset
 </button>

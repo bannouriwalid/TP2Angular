@@ -7,13 +7,14 @@ import { APP_ROUTES } from '../../../config/routes.config';
 import { AuthService } from '../../auth/services/auth.service';
 
 import { DefaultImagePipe } from '../pipes/default-image.pipe';
+import {NgIf} from "@angular/common";
 
 @Component({
     selector: 'app-details-cv',
     templateUrl: './details-cv.component.html',
     styleUrls: ['./details-cv.component.css'],
     standalone: true,
-    imports: [DefaultImagePipe],
+  imports: [DefaultImagePipe, NgIf],
 })
 export class DetailsCvComponent implements OnInit {
   private cvService = inject(CvService);
