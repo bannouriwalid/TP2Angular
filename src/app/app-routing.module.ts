@@ -30,23 +30,18 @@ const routes: Route[] = [
   },
   { path: "login", component: LoginComponent },
   { path: "rh", component: RhComponent },
-  {
-    path: "cv",
-    component: CvComponent,
-    resolve: {
-      cvs: CvResolver
-    },
-    loadChildren: () => import("./cv/cv.module").then((m) => m.CvModule),
 
+  {
+    path: 'cv',
+    loadChildren: () => import('./cv/cv.module').then((m) => m.CvModule)
   },
-  { path: "cv/add", component: AddCvComponent, canActivate: [AuthGuard] },
-  { path: "cv/:id", component: DetailsCvComponent },
   {
     path: "",
     component: FrontComponent,
     children: [
-      { path: "todo", component: TodoComponent,
-        loadChildren: () => import("./todo/todo.module").then((m) => m.TodoModule),
+      {
+        path: 'todo',
+        loadChildren: () => import('./todo/todo.module').then((m) => m.TodoModule),
         data : {preload : true},
       },
       { path: "word", component: MiniWordComponent },
@@ -61,9 +56,7 @@ const routes: Route[] = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    preloadingStrategy : CustomPreloadingStrategy,
-  }),
+  imports: [RouterModule.forRoot(routes),
   ],
   exports: [RouterModule],
 })
