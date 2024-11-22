@@ -7,9 +7,6 @@ import { FrontComponent } from "./templates/front/front.component";
 import { AdminComponent } from "./templates/admin/admin.component";
 import { LoginComponent } from "./auth/login/login.component";
 import { NF404Component } from "./components/nf404/nf404.component";
-import { AuthGuard } from "./auth/guards/auth.guard";
-import { AddCvComponent } from "./cv/add-cv/add-cv.component";
-import { CvComponent } from "./cv/cv/cv.component";
 import { DetailsCvComponent } from "./cv/details-cv/details-cv.component";
 import { RhComponent } from "./optimizationPattern/rh/rh.component";
 import {CvResolver} from "./cv/services/CvResolver";
@@ -40,7 +37,7 @@ const routes: Route[] = [
     component: FrontComponent,
     children: [
       {
-        path: 'todo',
+        path: "todo", component: TodoComponent,
         loadChildren: () => import('./todo/todo.module').then((m) => m.TodoModule),
         data : {preload : true},
       },
@@ -56,7 +53,9 @@ const routes: Route[] = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes),
+  imports: [RouterModule.forRoot(routes, {
+    preloadingStrategy : CustomPreloadingStrategy,
+    }),
   ],
   exports: [RouterModule],
 })
