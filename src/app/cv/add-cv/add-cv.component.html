@@ -1,32 +1,52 @@
-<p>add-cv works!</p>
 <form [formGroup]="form">
-  Name:
-  <input type="text" class="form-control" formControlName="name" />
-  @if (form.get('name')?.errors && form.get('name')?.touched) {
-    <div
-      class="alert alert-danger"
-      >
-      Ce champ est obligatoire
+  <div>
+    <label for="name">Name:</label>
+    <input type="text" id="name" formControlName="name" class="form-control" />
+    <div *ngIf="name.invalid && !name.untouched" class="alert alert-danger">
+      Ce champ est obligatoire.
     </div>
-  }
-  Firstname:
-  <input type="text" class="form-control" formControlName="firstname" /> Age:
-  <input type="text" class="form-control" formControlName="age" /> Cin:
-  <input type="text" class="form-control" formControlName="cin" />
-  @if (
-    form.errors && form.errors['cinFirstCars'] && cin?.touched && age?.touched
-    ) {
-    <div
-      class="alert alert-danger"
-      >
-      Cette Cin est invalide
+  </div>
+
+  <div>
+    <label for="firstname">Firstname:</label>
+    <input type="text" id="firstname" formControlName="firstname" class="form-control" />
+  </div>
+
+  <div>
+    <label for="age">Age:</label>
+    <input type="number" id="age" formControlName="age" class="form-control" />
+  </div>
+
+  <div>
+    <label for="cin">Cin:</label>
+    <input type="text" id="cin" formControlName="cin" class="form-control" />
+    <div *ngIf="cin.hasError('pattern') && !cin.untouched" class="alert alert-danger">
+      Le Cin doit être constitué de 8 chiffres.
     </div>
-  }
-  Job: <input type="text" class="form-control" formControlName="job" /> Path:
-  <input type="text" class="form-control" formControlName="path" />
+
+    <div *ngIf="form.hasError('cinAgeInvalid') && !cin.untouched" class="alert alert-danger">
+      {{ form.errors?.['cinAgeInvalid'] }}
+    </div>
+
+    <div *ngIf="cin.hasError('cinTaken') && !cin.untouched" class="alert alert-danger">
+      Le Cin existe déjà.
+    </div>
+  </div>
+
+  <div>
+    <label for="job">Job:</label>
+    <input type="text" id="job" formControlName="job" class="form-control" />
+  </div>
+
+  <div>
+    <label for="path">Path:</label>
+    <input type="text" id="path" formControlName="path" class="form-control" [disabled]="age.value < 18" />
+    <div *ngIf="age.value < 18" class="alert alert-warning">
+      Les mineurs ne peuvent pas renseigner ce champ.
+    </div>
+  </div>
 
   <button [disabled]="form.invalid" class="btn btn-primary" (click)="addCv()">
-    add cv
+    Ajouter CV
   </button>
 </form>
-{{ form.errors | json }}

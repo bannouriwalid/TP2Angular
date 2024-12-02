@@ -1,69 +1,94 @@
-import { Component, inject } from "@angular/core";
+import {Component, inject, OnDestroy, OnInit} from "@angular/core";
 import { AbstractControl, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CvService } from "../services/cv.service";
 import { Router } from "@angular/router";
 import { ToastrService } from "ngx-toastr";
-import { APP_ROUTES } from "src/config/routes.config";
 import { Cv } from "../model/cv";
-import { JsonPipe } from "@angular/common";
+import {JsonPipe, NgIf} from "@angular/common";
+import {APP_ROUTES} from "../../../config/routes.config";
+import {DefaultImagePipe} from "../pipes/default-image.pipe";
+import {cinAsyncValidator} from "./cinAsyncValidator";
+import {cinAgeValidator} from "./cinAgeValidator";
 
 @Component({
     selector: "app-add-cv",
     templateUrl: "./add-cv.component.html",
     styleUrls: ["./add-cv.component.css"],
     standalone: true,
-    imports: [
+  imports: [
     FormsModule,
     ReactiveFormsModule,
-    JsonPipe
-],
+    JsonPipe,
+    NgIf,
+    DefaultImagePipe
+  ],
 })
-export class AddCvComponent {
+export class AddCvComponent implements OnInit, OnDestroy {
   private cvService = inject(CvService);
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private formBuilder = inject(FormBuilder);
+  private defaultImagePipe = inject(DefaultImagePipe);
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
+  form = this.formBuilder.group({
+    name: ['', Validators.required],
+    firstname: ['', Validators.required],
+    path: [{ value: "", disabled: true }],
+    job: ['', Validators.required],
+    cin: ['', [Validators.required, Validators.pattern('[0-9]{8}')],
+         [cinAsyncValidator(this.cvService)],
+    ],
+    age: [0, Validators.required],
+  }, { validators: [cinAgeValidator] });
 
-  constructor() {}
+  ngOnInit(): void {
+    const savedForm = localStorage.getItem('cv');
+    if (savedForm) {
+      this.form.setValue(JSON.parse(savedForm));
+    }
 
-  form = this.formBuilder.group(
-    {
-      name: ["", Validators.required],
-      firstname: ["", Validators.required],
-      path: [""],
-      job: ["", Validators.required],
-      cin: [
-        "",
-        {
-          validators: [Validators.required, Validators.pattern("[0-9]{8}")],
-        },
-      ],
-      age: [
-        0,
-        {
-          validators: [Validators.required],
-        },
-      ],
-    },
-  );
+    this.form.valueChanges.subscribe((formData) => {
+      localStorage.setItem('cv', JSON.stringify(formData));
+    });
 
-  addCv() {
-    this.cvService.addCv(this.form.value as Cv).subscribe({
-      next: (cv) => {
-        this.router.navigate([APP_ROUTES.cv]);
-        this.toastr.success(`Le cv ${cv.firstname} ${cv.name}`);
-      },
-      error: (err) => {
-        this.toastr.error(
-          `Une erreur s'est produite, Veuillez contacter l'admin`
-        );
-      },
+    this.form.get('age')?.valueChanges.subscribe((age: number | null) => {
+      const pathControl = this.form.get('path');
+      if (age !== null && age >= 18) {
+        pathControl?.enable();
+      } else {
+        pathControl?.disable();
+        pathControl?.setValue('');
+      }
     });
   }
 
+  ngOnDestroy(): void {
+    const formData = {
+      ...this.form.value,
+      path: this.form.get('path')?.value || '',
+    };
+     localStorage.setItem('cv', JSON.stringify(formData));
+  }
+
+  addCv() {
+    const formData = {
+      ...this.form.value,
+      path: this.defaultImagePipe.transform(this.form.get('path')?.value || ''),
+    };
+    this.cvService.addCv(formData as Cv).subscribe({
+      next: (cv) => {
+        localStorage.removeItem('cv');
+        console.log(localStorage.getItem('cv'));
+
+        this.router.navigate([APP_ROUTES.cv]);
+        this.toastr.success(`Le cv ${cv.firstname} ${cv.name} a été ajouté avec succès.`);
+      },
+      error: (err) => {
+        console.error('Error adding CV:', err);
+        this.toastr.error(`Une erreur s'est produite. Veuillez réessayer.`);
+      },
+    });
+  }
   get name(): AbstractControl {
     return this.form.get("name")!;
   }

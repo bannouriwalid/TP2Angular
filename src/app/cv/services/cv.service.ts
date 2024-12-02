@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { Cv } from "../model/cv";
-import { Observable, Subject } from "rxjs";
+import {map, Observable, Subject} from "rxjs";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { API } from "../../../config/api.config";
 
@@ -39,6 +39,18 @@ export class CvService {
   getFakeCvs(): Cv[] {
     return this.cvs;
   }
+
+  checkCinExists(cin: number): Observable<boolean> {
+    const search = `{"where":{"cin":${cin}}}`;
+    const params = new HttpParams().set('filter', search);
+
+    return this.http.get<any>(API.cv, { params }).pipe(
+      map(response => {
+        return response.length > 0;
+      })
+    );
+  }
+
 
   /**
    *

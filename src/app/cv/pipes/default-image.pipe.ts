@@ -1,9 +1,12 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Injectable, Pipe, PipeTransform} from '@angular/core';
 import { CONSTANTES } from '../../../config/const.config';
 
 @Pipe({
     name: 'defaultImage',
     standalone: true,
+})
+@Injectable({
+  providedIn: 'root',
 })
 export class DefaultImagePipe implements PipeTransform {
   transform(path: string): string {
