@@ -45,6 +45,14 @@ export class AddCvComponent implements OnInit, OnDestroy {
     const savedForm = localStorage.getItem('cv');
     if (savedForm) {
       this.form.setValue(JSON.parse(savedForm));
+      const age = this.form.get('age')?.value;
+      const pathControl = this.form.get('path');
+      if (age !== undefined && age !== null && age >= 18 ) {
+        pathControl?.enable();
+      } else {
+        pathControl?.disable();
+        pathControl?.setValue('');
+      }
     }
 
     this.form.valueChanges.subscribe((formData) => {
@@ -82,6 +90,9 @@ export class AddCvComponent implements OnInit, OnDestroy {
 
         this.router.navigate([APP_ROUTES.cv]);
         this.toastr.success(`Le cv ${cv.firstname} ${cv.name} a été ajouté avec succès.`);
+        
+        this.form.reset();
+        this.form.get('path')?.disable();
       },
       error: (err) => {
         console.error('Error adding CV:', err);
