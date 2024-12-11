@@ -1,35 +1,43 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {User} from "../users.service";
-import { FormsModule } from '@angular/forms';
-
-
-export const fibonnaci = (n: number): number => {
-  if (n==1 || n==0) {
-    return 1;
-  }
-  return fibonnaci(n-1) + fibonnaci(n-2);
-}
+import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
-    selector: 'app-user-list',
-    templateUrl: './user-list.component.html',
-    styleUrls: ['./user-list.component.css'],
-    standalone: true,
-    imports: [FormsModule]
+  selector: 'app-user-list',
+  templateUrl: './user-list.component.html',
+  styleUrls: ['./user-list.component.css'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserListComponent {
+  @Input() users: { name: string; age: number; fiboValue?: number }[] = [];
   @Input() usersCluster: string = '';
-  @Input() users: User[] = [];
   @Output() add = new EventEmitter<string>();
-  userFullName: string = '';
-  addUser() {
-    this.add.emit(this.userFullName);
-    this.userFullName = '';
-  }
-  fibo(n: number): number {
-    const fib = fibonnaci(n);
-    console.log({n, fib});
 
-    return fib;
+  userForm: FormGroup;
+  private fiboCache: { [key: number]: number } = {};
+
+  constructor(private fb: FormBuilder) {
+    this.userForm = this.fb.group({
+      userFullName: ['']
+    });
   }
-}
+
+  fibo(n: number): number {
+    if (n <= 1) return n;
+    if (this.fiboCache[n]) return this.fiboCache[n];
+    this.fiboCache[n] = this.fibo(n - 1) + this.fibo(n - 2);
+    return this.fiboCache[n];
+  }
+
+  addUser(): void {
+    const userFullName = this.userForm.get('userFullName')?.value;
+    if (userFullName) {
+      const age = Math.floor(Math.random() * 60); 
+      const fiboValue = this.fibo(age);
+      this.users = [...this.users, { name: userFullName, age, fiboValue }];
+      this.userForm.reset();
+    }
+  }
+}  

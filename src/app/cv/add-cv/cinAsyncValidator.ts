@@ -5,7 +5,7 @@ import { CvService } from '../services/cv.service';
 
 export function cinAsyncValidator(cvService: CvService): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
-    if (!control.value) return of(null); // Skip validation if empty.
+    if (!control.value) return of(null);
 
     return of(control.value).pipe(
       debounceTime(500),

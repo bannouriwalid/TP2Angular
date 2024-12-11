@@ -1,17 +1,16 @@
 <div class="alert alert-info">List of {{usersCluster}}</div>
 <div class="row">
   <div class="col-9">
-    <input type="text" class="form-control" [(ngModel)]="userFullName">
+    <form [formGroup]="userForm">
+      <input type="text" class="form-control" formControlName="userFullName">
+    </form>
   </div>
   <div class="col-3">
-    <button class="btn btn-primary" [disabled]="!userFullName" (click)="addUser()">add user</button>
+    <button class="btn btn-primary" [disabled]="!userForm.get('userFullName')?.value" (click)="addUser()">add user</button>
   </div>
 </div>
 <ol class="list-group">
-  @for (user of users; track user) {
-    <li
-      class="list-group-item">
-      {{user.name}} : {{user.age}} [{{fibo(user.age)}}]
-    </li>
-  }
+  <li *ngFor="let user of users" class="list-group-item">
+    {{user.name}} : {{user.age}} [{{user.fiboValue}}]
+  </li>
 </ol>
