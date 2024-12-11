@@ -11,7 +11,7 @@ export function cinAsyncValidator(cvService: CvService): AsyncValidatorFn {
       debounceTime(500),
       switchMap((cin) =>
         cvService.checkCinExists(cin).pipe(
-          map((exists) => (exists ? { cinaTken: true } : null)),
+          map((exists) => (exists ? { cinTaken : true } : null)),
           catchError(() => of(null))
         )
       )
